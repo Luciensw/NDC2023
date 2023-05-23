@@ -21,7 +21,7 @@ class Jeu():
         self.j1sword = False
         self.j2sword = False
         pyxel.load("theme.pyxres")
-        pyxel.music(0)
+        pyxel.playm(0, loop = True)
         pyxel.run(self.update, self.draw)
 
 
@@ -76,8 +76,13 @@ class Jeu():
 
     def draw(self):
         pyxel.cls(0)
+        pyxel.bltm(0,0,0,0,0,128,128,0)
         pyxel.blt(self.j1x, self.j1y, 0, 0, 0, 8, 8, 0)
         pyxel.blt(self.j2x, self.j2y, 0, 0, 8, -8, 8, 0)
+        if self.j1sword:
+            pass
+        if self.j2sword:
+            pass
 
 
 
