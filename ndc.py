@@ -1,10 +1,20 @@
 import pyxel
 
-
+# Reste à faire :
+# Rajouter un knockback de plus en plsu grand quand un joueur attaque l'autre
+# Un joueur doit gagner quand l'autre quitte la zone de combat
+# Rajouter l'orientation des personnages
 
 
 class Jeu():
 
+    '''
+    Voici notre jeu : Spartacus bros brawl super ultra ultimate !!!!
+    Ce jeu est un smash bros like qui se joue à 2 joueurs.
+    LES JOUEURS NE SONT PAS DES OISEAUX.
+    Le joueur 1 utilise les touches ZQSD pour se déplacer et la barre espace pour attaquer.
+    Le joueur 2 utilise les flèches du clavier pour se déplacer et la touche entrée pour attaquer.
+    '''
 
 
 
@@ -83,7 +93,6 @@ class Jeu():
             pyxel.blt(self.j1x+7, self.j1y, 0, 8, 24, 8, 8, 0)
         if self.j2sword:
             pyxel.blt(self.j2x-7, self.j2y, 0, 8, 24, -8, 8, 0)
-        pyxel.text(0, 0, "Bravo, le jeu est pas fini", 0)
 
 
 
