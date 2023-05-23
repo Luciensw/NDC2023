@@ -3,3 +3,5 @@
 
 Todo :
 - 2 joueurs
+- saut
+- 
