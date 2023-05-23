@@ -37,8 +37,8 @@ class Jeu():
             self.j1x += 1
         if pyxel.btn(pyxel.KEY_Q):
             self.j1x -= 1
-        if pyxel.btn(pyxel.KEY_SPACE):
-            not self.j1sword
+        if pyxel.btnr(pyxel.KEY_SPACE):
+            self.j1sword = not self.j1sword
 
 
         # Déplacement joueur 2
@@ -46,8 +46,8 @@ class Jeu():
             self.j2x += 1
         if pyxel.btn(pyxel.KEY_LEFT):
             self.j2x -= 1
-        if pyxel.btn(pyxel.KEY_RETURN):
-            not self.j2sword
+        if pyxel.btnr(pyxel.KEY_RETURN):
+            self.j2sword = not self.j2sword
 
 
         # Saut et gravité
@@ -80,9 +80,10 @@ class Jeu():
         pyxel.blt(self.j1x, self.j1y, 0, 0, 0, 8, 8, 0)
         pyxel.blt(self.j2x, self.j2y, 0, 0, 8, -8, 8, 0)
         if self.j1sword:
-            pass
+            pyxel.blt(self.j1x+7, self.j1y, 0, 8, 24, 8, 8, 0)
         if self.j2sword:
-            pass
+            pyxel.blt(self.j2x-7, self.j2y, 0, 8, 24, -8, 8, 0)
+        pyxel.text(0, 0, "Bravo, le jeu est pas fini", 0)
 
 
 
