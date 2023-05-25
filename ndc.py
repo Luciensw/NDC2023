@@ -5,6 +5,53 @@ import pyxel
 # Un joueur doit gagner quand l'autre quitte la zone de combat
 # Rajouter l'orientation des personnages
 
+class Joueur():
+    def __init__(self, x, y, u, v, w, h, right, left, jump_button, sword_button):
+        self.x = x
+        self.y = y
+        self.u = u
+        self.v = v
+        self.w = w
+        self.h = h
+        self.right = right
+        self.left = left
+        self.jump_button = jump_button
+        self.sword_button = sword_button
+        self.hp = 5
+        self.jump = "Ground"
+        self.sword = False
+        self.orientation = 1
+        self.vector = [0,0]
+    
+    def update(self):
+        if pyxel.btn(self.right):
+            self.x += 1
+            self.orientation = 1
+        if pyxel.btn(self.left):
+            self.x -= 1
+            self.orientation = -1
+
+
+        if pyxel.btnr(self.sword_button):
+            self.sword = not self.sword
+            print("sword")
+
+        if pyxel.btn(self.jump_button) and self.jump == "Ground":
+            self.jump = "Jump"
+        if self.jump == "Jump":
+            self.y -= 2
+        if self.y < 30:
+            self.jump = "Fall"
+        if self.jump == "Fall":
+            self.y += 2
+        if self.y >= 60:
+            self.jump = "Ground"
+
+    def draw(self):
+        pyxel.blt(self.x, self.y, 0, self.u, self.v, self.w * self.orientation, self.h, 0)
+
+
+
 
 class Jeu():
 
@@ -20,84 +67,33 @@ class Jeu():
 
     def __init__(self):
         pyxel.init(128, 128, title="NDC 2023")
-        self.j1x = 15
-        self.j1y = 60
-        self.j2x = 30
-        self.j2y = 60
-        self.jumpj1 = "Ground"
-        self.jumpj2 = "Ground"
-        self.j1hp = 5
-        self.j2hp = 5
-        self.j1sword = False
-        self.j2sword = False
+        self.joueur_1 = Joueur(15, 60, 2, 0, 6, 8, pyxel.KEY_D, pyxel.KEY_Q, pyxel.KEY_Z, pyxel.KEY_SPACE)
+        self.joueur_2 = Joueur(30, 60, 2, 8, 6, 8, pyxel.KEY_RIGHT, pyxel.KEY_LEFT, pyxel.KEY_UP, pyxel.KEY_RETURN)
         pyxel.load("theme.pyxres")
         pyxel.playm(0, loop = True)
         pyxel.run(self.update, self.draw)
 
 
-    def collision_j1(self):
-        if self.j2sword:
-            if (self.j1x < self.j2x+1 and self.j1x > self.j2x-4) or (self.j1x+5 > self.j2x-4 and self.j1x+5 < ):
-                print("coucou")
+    def update(self):       
+        # self.collision_j1()
+        self.joueur_1.update()
+        self.joueur_2.update()
+        self.collision()
 
-
-
-    def update(self):
-
-
-        # Déplacement joueur 1
-        if pyxel.btn(pyxel.KEY_D):
-            self.j1x += 1
-        if pyxel.btn(pyxel.KEY_Q):
-            self.j1x -= 1
-        if pyxel.btnr(pyxel.KEY_SPACE):
-            self.j1sword = not self.j1sword
-
-
-        # Déplacement joueur 2
-        if pyxel.btn(pyxel.KEY_RIGHT):
-            self.j2x += 1
-        if pyxel.btn(pyxel.KEY_LEFT):
-            self.j2x -= 1
-        if pyxel.btnr(pyxel.KEY_RETURN):
-            self.j2sword = not self.j2sword
-
-
-        # Saut et gravité
-        if pyxel.btn(pyxel.KEY_UP) and self.jumpj2 == "Ground":
-            self.jumpj2 = "Jump"
-        if self.jumpj2 == "Jump":
-            self.j2y -= 2
-        if self.j2y < 30:
-            self.jumpj2 = "Fall"
-        if self.jumpj2 == "Fall":
-            self.j2y += 2
-        if self.j2y >= 60:
-            self.jumpj2 = "Ground"
-
-        if pyxel.btn(pyxel.KEY_Z) and self.jumpj1 == "Ground":
-            self.jumpj1 = "Jump"
-        if self.jumpj1 == "Jump":
-            self.j1y -= 2
-        if self.j1y < 30:
-            self.jumpj1 = "Fall"
-        if self.jumpj1 == "Fall":
-            self.j1y += 2
-        if self.j1y >= 60:
-            self.jumpj1 = "Ground"
-        
-        self.collision_j1()
-
+    def collision(self):
+        if (self.joueur_1.x < self.joueur_2.x and self.joueur_1.x+self.joueur_1.w > self.joueur_2.x) or (self.joueur_2.x < self.joueur_1.x and self.joueur_2.x+self.joueur_2.w > self.joueur_1.x):
+            print("test")
+            print("toto")
 
     def draw(self):
         pyxel.cls(0)
         pyxel.bltm(0,0,0,0,0,128,128,0)
-        pyxel.blt(self.j1x, self.j1y, 0, 2, 0, 6, 8, 0)
-        pyxel.blt(self.j2x, self.j2y, 0, 2, 8, -6, 8, 0)
-        if self.j1sword:
-            pyxel.blt(self.j1x+5, self.j1y, 0, 8, 24, 5, 8, 0)
-        if self.j2sword:
-            pyxel.blt(self.j2x-4, self.j2y, 0, 8, 24, -5, 8, 0)
+        self.joueur_1.draw()
+        self.joueur_2.draw()
+        # if self.j1sword:
+        #     pyxel.blt(self.j1x+5, self.j1y, 0, 8, 24, 5, 8, 0)
+        # if self.j2sword:
+        #     pyxel.blt(self.j2x-4, self.j2y, 0, 8, 24, -5, 8, 0)
 
 
 
