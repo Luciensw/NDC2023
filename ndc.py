@@ -37,7 +37,7 @@ class Jeu():
 
     def collision_j1(self):
         if self.j2sword:
-            if (self.j1x > self.j2x-5 or self.j1x < self.j2x-10):
+            if (self.j1x < self.j2x+1 and self.j1x > self.j2x-4) or (self.j1x+5 > self.j2x-4 and self.j1x+5 < ):
                 print("coucou")
 
 
