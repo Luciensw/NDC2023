@@ -35,7 +35,10 @@ class Jeu():
         pyxel.run(self.update, self.draw)
 
 
-
+    def collision_j1(self):
+        if self.j2sword:
+            if (self.j1x > self.j2x-5 or self.j1x < self.j2x-10):
+                print("coucou")
 
 
 
@@ -82,17 +85,19 @@ class Jeu():
             self.j1y += 2
         if self.j1y >= 60:
             self.jumpj1 = "Ground"
+        
+        self.collision_j1()
 
 
     def draw(self):
         pyxel.cls(0)
         pyxel.bltm(0,0,0,0,0,128,128,0)
-        pyxel.blt(self.j1x, self.j1y, 0, 0, 0, 8, 8, 0)
-        pyxel.blt(self.j2x, self.j2y, 0, 0, 8, -8, 8, 0)
+        pyxel.blt(self.j1x, self.j1y, 0, 2, 0, 6, 8, 0)
+        pyxel.blt(self.j2x, self.j2y, 0, 2, 8, -6, 8, 0)
         if self.j1sword:
-            pyxel.blt(self.j1x+7, self.j1y, 0, 8, 24, 8, 8, 0)
+            pyxel.blt(self.j1x+5, self.j1y, 0, 8, 24, 5, 8, 0)
         if self.j2sword:
-            pyxel.blt(self.j2x-7, self.j2y, 0, 8, 24, -8, 8, 0)
+            pyxel.blt(self.j2x-4, self.j2y, 0, 8, 24, -5, 8, 0)
 
 
 
