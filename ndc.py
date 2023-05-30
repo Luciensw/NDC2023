@@ -1,18 +1,26 @@
 import pyxel
 
 # Reste à faire :
-# Rajouter un knockback de plus en plsu grand quand un joueur attaque l'autre
+# Rajouter un knockback de plus en plus grand quand un joueur attaque l'autre
 # Un joueur doit gagner quand l'autre quitte la zone de combat
 # Rajouter l'orientation des personnages
 
-class Joueur():
-    def __init__(self, x, y, u, v, right_button, left_button, jump_button, sword_button):
+class Objet():
+    def __init__(self, x, y, u, v, w, h) -> None:
         self.x = x
         self.y = y
         self.u = u
         self.v = v
-        self.w = 10
-        self.h = 16
+        self.w = w
+        self.h = h
+    def collision(self, objet):
+        if ((self.x < objet.x and self.x+self.w > objet.x) or (objet.x < self.x and objet.x+objet.w > self.x)) and ((self.y < objet.y and self.y+self.h > objet.y) or (objet.y < self.y and objet.y+objet.h > self.y)):
+            print("test")
+            print("toto")
+
+class Joueur(Objet):
+    def __init__(self, x, y, u, v, right_button, left_button, jump_button, sword_button):
+        Objet.__init__(self, x, y, u, v, w = 10, h = 16)
         self.right_button = right_button
         self.left_button = left_button
         self.jump_button = jump_button
@@ -52,14 +60,9 @@ class Joueur():
         if self.sword:
             pyxel.blt(self.x+(self.w*self.orientation), self.y, 0, 0, 48, self.w * self.orientation, self.h, 0)
 
-class Plateforme():
+class Plateforme(Objet):
     def __init__(self, x, y, length) -> None:
-        self.x = x
-        self.y = y
-        self.u = 16
-        self.v = 25
-        self.w = 8
-        self.h = 6
+        Objet.__init__(self, x, y, u = 16, v = 25, w = 8, h = 6)
         self.length = length
     def draw(self):
         if self.length == 1:
@@ -83,6 +86,7 @@ class Jeu():
         self.joueur_2 = Joueur(30, 55, 3, 32, pyxel.KEY_RIGHT, pyxel.KEY_LEFT, pyxel.KEY_UP, pyxel.KEY_RETURN)
         self.plateforme_1 = Plateforme(10, 73, 1)
         self.plateforme_2 = Plateforme(30, 73, 5)
+        self.score = [0, 0]
         pyxel.load("theme.pyxres")
         pyxel.playm(0, loop = True)
         pyxel.run(self.update, self.draw)
@@ -92,12 +96,7 @@ class Jeu():
         # self.collision_j1()
         self.joueur_1.update()
         self.joueur_2.update()
-        self.collision()
-
-    def collision(self):
-        if ((self.joueur_1.x < self.joueur_2.x and self.joueur_1.x+self.joueur_1.w > self.joueur_2.x) or (self.joueur_2.x < self.joueur_1.x and self.joueur_2.x+self.joueur_2.w > self.joueur_1.x)):
-            print("test")
-            print("toto")
+        self.joueur_1.collision(self.joueur_2)
 
     def draw(self):
         pyxel.cls(0)
@@ -106,6 +105,8 @@ class Jeu():
         self.plateforme_2.draw()
         self.joueur_1.draw()
         self.joueur_2.draw()
+        pyxel.text(2, 2, str(self.score[0]), 0)
+        pyxel.text(pyxel.width-5, 2, str(self.score[1]), 0)
 
 
 Jeu()
