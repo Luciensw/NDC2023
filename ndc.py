@@ -6,30 +6,30 @@ import pyxel
 # Rajouter l'orientation des personnages
 
 class Objet():
-    def __init__(self, x, y, u, v, w, h) -> None:
+    def __init__(self, x, y, u, v, w, h, parent) -> None:
         self.x = x
         self.y = y
         self.u = u
         self.v = v
         self.w = w
         self.h = h
+        self.parent = parent
     def collision(self, objet):
         if ((self.x < objet.x and self.x+self.w > objet.x) or (objet.x < self.x and objet.x+objet.w > self.x)) and ((self.y < objet.y and self.y+self.h > objet.y) or (objet.y < self.y and objet.y+objet.h > self.y)):
             print("test")
             print("toto")
 
 class Joueur(Objet):
-    def __init__(self, x, y, u, v, right_button, left_button, jump_button, sword_button):
-        Objet.__init__(self, x, y, u, v, w = 10, h = 16)
+    def __init__(self, x, y, u, v, right_button, left_button, jump_button, sword_button, parent):
+        Objet.__init__(self, x, y, u, v, 10, 16, parent)
         self.right_button = right_button
         self.left_button = left_button
         self.jump_button = jump_button
         self.sword_button = sword_button
         self.hp = 5
         self.jump = "Ground"
-        self.sword = False
+        self.sword = None
         self.orientation = 1
-        self.vector = [0,0]
     
     def update(self):
         if pyxel.btn(self.right_button):
@@ -40,8 +40,8 @@ class Joueur(Objet):
             self.orientation = -1
 
 
-        if pyxel.btnr(self.sword_button):
-            self.sword = not self.sword
+        if pyxel.btnr(self.sword_button) and not self.sword:
+            self.sword = Sword(self.x + (self.w * self.orientation), self. y, 0, 48, 16 * self.orientation, 16, self)
             print("sword")
 
         if pyxel.btn(self.jump_button) and self.jump == "Ground":
@@ -54,15 +54,17 @@ class Joueur(Objet):
             self.y += 2
         if self.y >= 60:
             self.jump = "Ground"
+        if self.sword:
+            self.sword.update()
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.u, self.v, self.w * self.orientation, self.h, 0)
         if self.sword:
-            pyxel.blt(self.x+(self.w*self.orientation), self.y, 0, 0, 48, self.w * self.orientation, self.h, 0)
+            self.sword.draw()
 
 class Plateforme(Objet):
-    def __init__(self, x, y, length) -> None:
-        Objet.__init__(self, x, y, u = 16, v = 25, w = 8, h = 6)
+    def __init__(self, x, y, length, parent) -> None:
+        Objet.__init__(self, x, y, 16, 25, 8, 6, parent)
         self.length = length
     def draw(self):
         if self.length == 1:
@@ -76,16 +78,25 @@ class Plateforme(Objet):
                 pyxel.blt(self.x+((i+1)*8), self.y, 0, self.u+8, self.v, self.w, self.h, 0)
             pyxel.blt(self.x+((self.length-1)*8), self.y, 0, self.u+2*8, self.v, self.w, self.h, 0)
 
+class Sword(Objet):
+    def __init__(self, x, y, u, v, w, h, parent) -> None:
+        super().__init__(x, y, u, v, w, h, parent)
+        self.time = pyxel.frame_count
+    def update(self):
+        if pyxel.frame_count - self.time >= 3:
+            self.parent.sword = None
+    def draw(self):
+        pyxel.blt(self.x, self.y, 0, self.u, self.v, self.w, self.h, 0)
 
 
 class Jeu():
 
     def __init__(self):
         pyxel.init(128, 128, title="NDC 2023")
-        self.joueur_1 = Joueur(15, 55, 3, 0, pyxel.KEY_D, pyxel.KEY_Q, pyxel.KEY_Z, pyxel.KEY_SPACE)
-        self.joueur_2 = Joueur(30, 55, 3, 32, pyxel.KEY_RIGHT, pyxel.KEY_LEFT, pyxel.KEY_UP, pyxel.KEY_RETURN)
-        self.plateforme_1 = Plateforme(10, 73, 1)
-        self.plateforme_2 = Plateforme(30, 73, 5)
+        self.joueur_1 = Joueur(15, 55, 3, 0, pyxel.KEY_D, pyxel.KEY_Q, pyxel.KEY_Z, pyxel.KEY_SPACE, self)
+        self.joueur_2 = Joueur(30, 55, 3, 32, pyxel.KEY_RIGHT, pyxel.KEY_LEFT, pyxel.KEY_UP, pyxel.KEY_RETURN, self)
+        self.plateforme_1 = Plateforme(10, 73, 1, self)
+        self.plateforme_2 = Plateforme(30, 73, 5, self)
         self.score = [0, 0]
         pyxel.load("theme.pyxres")
         pyxel.playm(0, loop = True)
@@ -93,10 +104,13 @@ class Jeu():
 
 
     def update(self):       
-        # self.collision_j1()
         self.joueur_1.update()
         self.joueur_2.update()
         self.joueur_1.collision(self.joueur_2)
+        if self.joueur_2.sword:
+            if self.joueur_1.collision(self.joueur_2.sword):
+                self.joueur_1.hp -= 1
+                print(self.joueur_1.hp)
 
     def draw(self):
         pyxel.cls(0)
