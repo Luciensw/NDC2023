@@ -1,4 +1,5 @@
 import pyxel
+from random import randint
 
 # Reste à faire :
 # Rajouter un knockback de plus en plus grand quand un joueur attaque l'autre
@@ -121,6 +122,7 @@ class Jeu():
         self.joueur_2.draw()
         pyxel.text(2, 2, str(self.score[0]), 0)
         pyxel.text(pyxel.width-5, 2, str(self.score[1]), 0)
+
 
 
 Jeu()
